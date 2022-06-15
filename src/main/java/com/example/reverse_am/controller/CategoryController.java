@@ -10,33 +10,33 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api/category")
+@RequestMapping("/api")
 public class CategoryController {
 
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/categories/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable("id")Long id){
         CategoryDTO category = this.categoryService.getCategoryById(id);
         return ResponseEntity.ok().body(category);
     }
 
-    @PostMapping
+    @PostMapping("/categories")
     public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryDTO categoryDTO){
         Assert.notNull(categoryDTO,"Category is null ");
         CategoryDTO category = this.categoryService.createCategory(categoryDTO);
         return ResponseEntity.ok().body(category);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/categories/{id}")
     public ResponseEntity<?> updateCategory(@PathVariable("id")Long id ,@Valid @RequestBody CategoryDTO categoryDTO){
         Assert.notNull(categoryDTO,"Category is null ");
         CategoryDTO category = this.categoryService.updateCategory(id,categoryDTO);
         return ResponseEntity.ok().body(category);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/categories/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable("id")Long id){
         this.categoryService.deleteCategory(id);
         return ResponseEntity.ok().body("Category is deleted ");

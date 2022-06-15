@@ -1,11 +1,12 @@
 package com.example.reverse_am.mappers;
 
-import com.example.reverse_am.dto.productDTO.AdminProductDTO;
-import com.example.reverse_am.dto.productDTO.UserProductDTO;
-import com.example.reverse_am.dto.productDTO.WorkerProductDTO;
+import com.example.reverse_am.dto.productDTO.*;
 import com.example.reverse_am.entities.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.reverse_am.entities.enums.Condition.NOT_DEFINED;
 
@@ -43,16 +44,31 @@ public class ProductMapper {
                 userMapper.toUser(productDTO.getUser()), categoryMapper.toCategory(productDTO.getCategory()));
     }
 
-//    public Product toProduct(WorkerProductDTO productDTO){
-//        return new Product(productDTO.getName(), productDTO.getDescription(), productDTO.getCondition(),
-//                false, 0L, productDTO.getInWareHouse(), userMapper.toUser(productDTO.getUser())
-//                ,categoryMapper.toCategory(productDTO.getCategory()));
-//    }
-//
-//    public Product toProduct(AdminProductDTO productDTO){
-//        return new Product(productDTO.getName(), productDTO.getDescription(), productDTO.getCondition(),
-//                productDTO.getVerification(), productDTO.getRevCoin(), productDTO.getInWareHouse(),
-//                userMapper.toUser(productDTO.getUser()) ,categoryMapper.toCategory(productDTO.getCategory()));
-//    }
+    private UserViewProductDTO toUserViewProductDTO(Product product){
+        return new UserViewProductDTO(product.getName(), product.getDescription(), product.getCondition(),
+                product.getRevCoin(), this.categoryMapper.toCategoryDTO(product.getCategory()));
+    }
+
+    private WorkerViewProductDTO toWorkerViewProductDTO(Product product){
+        return new WorkerViewProductDTO(product.getName(), product.getDescription(),
+                this.categoryMapper.toCategoryDTO(product.getCategory()));
+    }
+
+    private AdminViewProductDTO toAdminViewProductDTO(Product product){
+        return new AdminViewProductDTO(product.getName(), product.getDescription(), product.getCondition(),
+                this.categoryMapper.toCategoryDTO(product.getCategory()));
+    }
+
+    public List<UserViewProductDTO> mapAllProductsForUser(List<Product> products){
+        return products.stream().map(this::toUserViewProductDTO).collect(Collectors.toList());
+    }
+
+    public List<WorkerViewProductDTO> mapAllProductsForWorker(List<Product> products){
+        return products.stream().map(this::toWorkerViewProductDTO).collect(Collectors.toList());
+    }
+
+    public List<AdminViewProductDTO> mapAllProductsForAdmin(List<Product> products){
+        return products.stream().map(this::toAdminViewProductDTO).collect(Collectors.toList());
+    }
 
 }

@@ -1,31 +1,24 @@
 package com.example.reverse_am.dto.productDTO;
 
 import com.example.reverse_am.dto.CategoryDTO;
-import com.example.reverse_am.dto.UserDTO;
 import com.example.reverse_am.entities.enums.Condition;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+public class UserViewProductDTO {
 
-public class WorkerProductDTO {
-
-    @Size(min = 3,max = 45)
     private String name;
     private String description;
     private Condition condition;
-    @NotNull
-    private Boolean inWareHouse;
+    private Long revCoin;
     private CategoryDTO category;
 
-    public WorkerProductDTO() {
+    public UserViewProductDTO() {
     }
 
-    public WorkerProductDTO(String name, String description, Condition condition, Boolean inWareHouse,
-                            CategoryDTO category) {
+    public UserViewProductDTO(String name, String description, Condition condition, Long revCoin, CategoryDTO category) {
         this.name = name;
         this.description = description;
         this.condition = condition;
-        this.inWareHouse = inWareHouse;
+        this.revCoin = revCoin;
         this.category = category;
     }
 
@@ -53,12 +46,12 @@ public class WorkerProductDTO {
         this.condition = condition;
     }
 
-    public Boolean getInWareHouse() {
-        return inWareHouse;
+    public Long getRevCoin() {
+        return revCoin;
     }
 
-    public void setInWareHouse(Boolean inWareHouse) {
-        this.inWareHouse = inWareHouse;
+    public void setRevCoin(Long revCoin) {
+        this.revCoin = revCoin;
     }
 
     public CategoryDTO getCategory() {
