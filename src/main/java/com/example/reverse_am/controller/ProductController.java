@@ -1,43 +1,56 @@
 package com.example.reverse_am.controller;
 
+import com.example.reverse_am.configuration.AppUser;
+import com.example.reverse_am.configuration.LoggedInUser;
 import com.example.reverse_am.dto.productDTO.*;
 import com.example.reverse_am.entities.enums.Condition;
 import com.example.reverse_am.service.ProductService;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/products")
+//@SecurityRequirement(name = "bearerAuth")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/products/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable("id")Long id){
         return ResponseEntity.ok().body(this.productService.getProductById(id));
     }
 
-    @GetMapping("/products/admin")
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<?> getProductsAdmin(){
         return ResponseEntity.ok().body(this.productService.getProductsAdmin());
     }
 
-    @GetMapping("/products/user")
+    @GetMapping("/user")
+    @PreAuthorize("hasRole('ROLE_user')")
     public ResponseEntity<?> getProductsUser(){
         return ResponseEntity.ok().body(this.productService.getProductsUser());
     }
 
-    @GetMapping("/products/worker")
+    @GetMapping("/worker")
+    @PreAuthorize("hasRole('ROLE_worker')")
     public ResponseEntity<?> getProductsWorker(){
         return ResponseEntity.ok().body(this.productService.getProductsWorker());
     }
 
-    @GetMapping("/products/search/user")
+    @GetMapping("user/search/")
+    @PreAuthorize("hasRole('ROLE_user')")
     public ResponseEntity<?> searchProductsUser(@RequestParam(required = false) String name,
                                                 @RequestParam(required = false) String category,
                                                 @RequestParam(required = false) Condition condition,
@@ -47,62 +60,69 @@ public class ProductController {
                 maxRevCoin));
     }
 
-    @GetMapping("/products/search/worker")
+    @GetMapping("/worker/search/")
+    @PreAuthorize("hasRole('ROLE_worker')")
     public ResponseEntity<?> searchProductsWorker(@RequestParam(required = false) String category){
         return ResponseEntity.ok().body(this.productService.searchProductWorker(category));
     }
 
-    @GetMapping("/products/search/admin")
+    @GetMapping("/admin/search/")
+    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<?> searchProductsAdmin(@RequestParam(required = false) String category,
                                                  @RequestParam(required = false) Condition condition){
         return ResponseEntity.ok().body(this.productService.searchProductAdmin(condition, category));
     }
 
-    @PostMapping("/products")
-    public ResponseEntity<?> createProduct(@Valid @RequestBody UserProductDTO productDTO){
-        Assert.notNull(productDTO,"Product is null ");
-        Assert.notNull(productDTO.getCategory(),"Category is null ");
-        Assert.notNull(productDTO.getUser(),"User is null ");
-        UserProductDTO product = this.productService.createProduct(productDTO);
+    @PostMapping
+    @PreAuthorize("hasRole('ROLE_user')")
+    public ResponseEntity<?> createProduct(@Valid @RequestBody UserProductDTO product, @LoggedInUser AppUser appUser){
+        Assert.notNull(product,"Product is null ");
+        Assert.notNull(product.getCategory(),"Category is null ");
+        UserProductDTO product1 = this.productService.createProduct(appUser.getUser(), product);
         return ResponseEntity.ok().body(product);
     }
 
-    @PutMapping("/products/user/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable("id")Long id, @Valid @RequestBody UserProductDTO productDTO){
-        Assert.notNull(productDTO,"Product is null ");
-        Assert.notNull(productDTO.getCategory(),"Category is null ");
-        Assert.notNull(productDTO.getUser(),"User is null ");
-        UserProductDTO product = this.productService.updateProductUser(id,productDTO);
+    @PutMapping("/user/{id}")
+    @PreAuthorize("hasRole('ROLE_user')")
+    public ResponseEntity<?> updateProduct(@PathVariable("id")Long id, @Valid @RequestBody UserProductDTO product){
+        Assert.notNull(product,"Product is null ");
+        Assert.notNull(product.getCategory(),"Category is null ");
+        UserProductDTO product1 = this.productService.updateProductUser(id, product);
         return ResponseEntity.ok().body(product);
     }
 
-    @PutMapping("/products/worker/{id}")
+    @PutMapping("/worker/{id}")
+    @PreAuthorize("hasRole('ROLE_worker')")
     public ResponseEntity<?> updateProduct(@PathVariable("id")Long id, @Valid @RequestBody WorkerProductDTO productDTO){
         Assert.notNull(productDTO,"Product is null ");
         WorkerProductDTO product = this.productService.updateProductWorker(id,productDTO);
         return ResponseEntity.ok().body(product);
     }
 
-    @PutMapping("/products/admin/{id}")
+    @PutMapping("/admin/{id}")
+    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<?> updateProduct(@PathVariable("id")Long id, @Valid @RequestBody AdminProductDTO productDTO){
         Assert.notNull(productDTO,"Product is null ");
         AdminProductDTO product = this.productService.updateProductAdmin(id,productDTO);
         return ResponseEntity.ok().body(product);
     }
 
-    @DeleteMapping("/products/user/{id}")
+    @DeleteMapping("/user/{id}")
+    @PreAuthorize("hasRole('ROLE_user')")
     public ResponseEntity<?> deleteProductUser(@PathVariable("id")Long id){
         this.productService.deleteProductUser(id);
         return ResponseEntity.ok().body("Product is deleted ");
     }
 
-    @DeleteMapping("/products/worker/{id}")
+    @DeleteMapping("/worker/{id}")
+    @PreAuthorize("hasRole('ROLE_worker')")
     public ResponseEntity<?> deleteProductWorker(@PathVariable("id")Long id){
         this.productService.deleteProductWorker(id);
         return ResponseEntity.ok().body("Product is deleted ");
     }
 
-    @DeleteMapping("/products/admin/{id}")
+    @DeleteMapping("/admin/{id}")
+    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<?> deleteProductAdmin(@PathVariable("id")Long id){
         this.productService.deleteProductAdmin(id);
         return ResponseEntity.ok().body("Product is deleted ");

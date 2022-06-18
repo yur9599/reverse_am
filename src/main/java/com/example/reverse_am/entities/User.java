@@ -27,6 +27,9 @@ public class User {
     @JoinColumn(name = "address_id",nullable = false,foreignKey = @ForeignKey(name = "fk_user_address"))
     @ManyToOne(fetch = FetchType.LAZY)
     private Address address;
+    @JoinColumn(name = "role",foreignKey = @ForeignKey(name = "fk_user_role"))
+    @OneToOne(fetch = FetchType.LAZY)
+    private Role role;
 
     @OneToOne(mappedBy = "user")
     private Bag bag;
@@ -38,7 +41,7 @@ public class User {
     }
 
     public User(String name, String sureName, String phoneNumber, String email, String password,
-                Long revCoin, Address address) {
+                Long revCoin, Address address, Role role) {
         this.name = name;
         this.sureName = sureName;
         this.phoneNumber = phoneNumber;
@@ -46,6 +49,7 @@ public class User {
         this.password = password;
         this.revCoin = revCoin;
         this.address = address;
+        this.role = role;
     }
 
     public String getName() {
@@ -102,6 +106,18 @@ public class User {
 
     public Long getRevCoin() {
         return revCoin;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Long getId() {
+        return id;
     }
 
 }

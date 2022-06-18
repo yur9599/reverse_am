@@ -13,18 +13,12 @@ import static com.example.reverse_am.entities.enums.Condition.NOT_DEFINED;
 @Component
 public class ProductMapper {
 
-    private final UserMapper userMapper;
-    private final CategoryMapper categoryMapper;
-
     @Autowired
-    public ProductMapper(UserMapper userMapper, CategoryMapper categoryMapper) {
-        this.userMapper = userMapper;
-        this.categoryMapper = categoryMapper;
-    }
+    private CategoryMapper categoryMapper;
 
     public UserProductDTO toUserProductDTO(Product product){
         return new UserProductDTO(product.getName(), product.getDescription(), product.getCondition(),
-                userMapper.toUserDTO(product.getUser()), categoryMapper.toCategoryDTO(product.getCategory()));
+                categoryMapper.toCategoryDTO(product.getCategory()));
     }
 
     public WorkerProductDTO toWorkerProductDTO(Product product){
@@ -41,21 +35,21 @@ public class ProductMapper {
                 productDTO.getDescription()==null?"Not defined":productDTO.getDescription(),
                 productDTO.getCondition()==null? NOT_DEFINED:productDTO.getCondition(),
                 false, 0L,false,
-                userMapper.toUser(productDTO.getUser()), categoryMapper.toCategory(productDTO.getCategory()));
+                null, categoryMapper.toCategory(productDTO.getCategory()));
     }
 
     private UserViewProductDTO toUserViewProductDTO(Product product){
-        return new UserViewProductDTO(product.getName(), product.getDescription(), product.getCondition(),
+        return new UserViewProductDTO(product.getId(), product.getName(), product.getDescription(), product.getCondition(),
                 product.getRevCoin(), this.categoryMapper.toCategoryDTO(product.getCategory()));
     }
 
     private WorkerViewProductDTO toWorkerViewProductDTO(Product product){
-        return new WorkerViewProductDTO(product.getName(), product.getDescription(),
+        return new WorkerViewProductDTO(product.getId(), product.getName(), product.getDescription(),
                 this.categoryMapper.toCategoryDTO(product.getCategory()));
     }
 
     private AdminViewProductDTO toAdminViewProductDTO(Product product){
-        return new AdminViewProductDTO(product.getName(), product.getDescription(), product.getCondition(),
+        return new AdminViewProductDTO(product.getId(), product.getName(), product.getDescription(), product.getCondition(),
                 this.categoryMapper.toCategoryDTO(product.getCategory()));
     }
 

@@ -10,33 +10,33 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/addresses")
 public class AddressController {
 
     @Autowired
     private AddressService addressService;
 
-    @PostMapping("/addresses")
+    @PostMapping
     public ResponseEntity<?> createAddress(@Valid @RequestBody AddressDTO addressDTO){
         Assert.notNull(addressDTO,"Address is null ");
         AddressDTO address = addressService.createAddress(addressDTO);
         return ResponseEntity.ok().body(address);
     }
 
-    @DeleteMapping("/addresses/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAddress(@PathVariable("id")Long id){
         addressService.deleteAddress(id);
         return ResponseEntity.ok().body("The address is deleted ");
     }
 
-    @PutMapping("/addresses/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateAddress(@PathVariable("id")Long id,@Valid @RequestBody AddressDTO addressDTO){
         Assert.notNull(addressDTO,"Address is null ");
         AddressDTO address = addressService.updateAddress(id,addressDTO);
         return ResponseEntity.ok().body(address);
     }
 
-    @GetMapping("/addresses/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getAddressById(@PathVariable("id")Long id){
         return ResponseEntity.ok().body(addressService.getAddressById(id));
     }

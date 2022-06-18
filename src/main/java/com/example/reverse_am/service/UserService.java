@@ -12,10 +12,7 @@ import com.example.reverse_am.exceptions.NoAccessException;
 import com.example.reverse_am.exceptions.ResourceNotFoundException;
 import com.example.reverse_am.mappers.AddressMapper;
 import com.example.reverse_am.mappers.UserMapper;
-import com.example.reverse_am.repository.AddressRepository;
-import com.example.reverse_am.repository.BagRepository;
-import com.example.reverse_am.repository.ProductRepository;
-import com.example.reverse_am.repository.UserRepository;
+import com.example.reverse_am.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,11 +30,14 @@ public class UserService {
     private final BagService bagService;
     private final BagRepository bagRepository;
     private final ProductRepository productRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     @Autowired
     public UserService(UserRepository userRepository, UserMapper userMapper, AddressRepository addressRepository,
                        AddressMapper addressMapper, BagService bagService, BagRepository bagRepository,
-                       ProductRepository productRepository) {
+                       ProductRepository productRepository, PasswordEncoder passwordEncoder,
+                       RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.addressRepository = addressRepository;
@@ -45,6 +45,8 @@ public class UserService {
         this.bagService = bagService;
         this.bagRepository = bagRepository;
         this.productRepository = productRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
     public UserDTO createUser(UserDTO userDTO){
@@ -54,7 +56,6 @@ public class UserService {
         if (this.userRepository.existsByPhoneNumber(userDTO.getPhoneNumber())){
             throw new DuplicateResourceException("There is already user with such phone number ");
         }
-        PasswordEncoder pe = new BCryptPasswordEncoder();
         Address addressDb1;
         Address address = addressMapper.toAddress(userDTO.getAddress());
         Optional<Address> addressDb = this.addressRepository.
@@ -65,20 +66,15 @@ public class UserService {
             addressDb1 = addressDb.get();
         }
         User user = userMapper.toUser(userDTO);
-        user.setPassword(pe.encode(user.getPassword()));
+        user.setRole(this.roleRepository.findRoleByRole(user.getRole().getRole()).get());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setAddress(addressDb1);
         User user1 = this.userRepository.save(user);
         this.bagService.createBag(new BagDTO(this.userMapper.toUserDTO(user)));
         return this.userMapper.toUserDTO(user1);
     }
 
-    public UserDTO updateUser(Long id, UserDTO userDTO){
-        Optional<User> userDB = this.userRepository.findById(id);
-        if (userDB.isEmpty()){
-            throw new ResourceNotFoundException("The user is not found ");
-        }
-        User user = userDB.get();
-        PasswordEncoder pe = new BCryptPasswordEncoder();
+    public UserDTO updateUser(User user, UserDTO userDTO){
         Address addressDb1 ;
         Address address = addressMapper.toAddress(userDTO.getAddress());
         Optional<Address> addressDb = this.addressRepository.
@@ -92,17 +88,17 @@ public class UserService {
         user.setSureName(userDTO.getSureName());
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setEmail(userDTO.getEmail());
-        user.setPassword(pe.encode(userDTO.getPassword()));
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setAddress(addressDb1);
-        return userDTO;
+        return this.userMapper.toUserDTO(this.userRepository.save(user));
     }
 
-    public void buyProduct(Long uId, Long pId){
-        Optional<User> userDB = this.userRepository.findById(uId);
-        if (userDB.isEmpty()){
-            throw new ResourceNotFoundException("The user is not found ");
-        }
-        User user = userDB.get();
+    public void buyProduct(User user, Long pId){
+//        Optional<User> userDB = this.userRepository.findById(uId);
+//        if (userDB.isEmpty()){
+//            throw new ResourceNotFoundException("The user is not found ");
+//        }
+//        User user = userDB.get();
         Optional<Bag> bagDB = this.bagRepository.findBagByUser(user);
         if (bagDB.isEmpty()){
             throw new ResourceNotFoundException("The bag is not found ");
@@ -112,6 +108,9 @@ public class UserService {
             throw new ResourceNotFoundException("The product is not found ");
         }
         Product product = productDB.get();
+        if (product.getUser().getId().equals(user.getId())){
+            throw new NoAccessException("You can`t buy your posted product ");
+        }
         if (product.getBag() == null && product.getVerification()){
             if (product.getRevCoin() <= user.getRevCoin()) {
                 user.setRevCoin(user.getRevCoin()-product.getRevCoin());
@@ -128,12 +127,16 @@ public class UserService {
         }
     }
 
-    public void deleteUser(Long id){
-        Optional<User> user = this.userRepository.findById(id);
-        if (user.isEmpty()){
-            throw new ResourceNotFoundException("The user is not found ");
+    public void deleteUser(User user){
+//        Optional<User> user = this.userRepository.findById(id);
+//        if (user.isEmpty()){
+//            throw new ResourceNotFoundException("The user is not found ");
+//        }
+        if (user.getRole().getRole().equals("admin") || user.getRole().getRole().equals("worker")){
+            throw new NoAccessException("You can`t delete admin`s page ");
         }
-        this.userRepository.delete(user.get());
+        this.bagRepository.delete( this.bagRepository.findBagByUser(user).get());
+        this.userRepository.delete(user);
     }
 
     public UserDTO getUserById(Long id){

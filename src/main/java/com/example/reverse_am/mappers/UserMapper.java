@@ -1,6 +1,7 @@
 package com.example.reverse_am.mappers;
 
 import com.example.reverse_am.dto.UserDTO;
+import com.example.reverse_am.entities.Role;
 import com.example.reverse_am.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,7 @@ public class UserMapper {
 
     public User toUser(UserDTO userDto){
         return new User(userDto.getName(), userDto.getSureName(), userDto.getPhoneNumber(), userDto.getEmail(),
-                userDto.getPassword(),0L,addressMapper.toAddress(userDto.getAddress()));
+                userDto.getPassword(),0L,addressMapper.toAddress(userDto.getAddress()), new Role("user"));
     }
 
     public UserDTO toUserDTO(User user){

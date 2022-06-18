@@ -5,6 +5,7 @@ import com.example.reverse_am.entities.enums.Condition;
 
 public class UserViewProductDTO {
 
+    private Long id;
     private String name;
     private String description;
     private Condition condition;
@@ -14,7 +15,8 @@ public class UserViewProductDTO {
     public UserViewProductDTO() {
     }
 
-    public UserViewProductDTO(String name, String description, Condition condition, Long revCoin, CategoryDTO category) {
+    public UserViewProductDTO(Long id, String name, String description, Condition condition, Long revCoin, CategoryDTO category) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.condition = condition;
@@ -60,6 +62,14 @@ public class UserViewProductDTO {
 
     public void setCategory(CategoryDTO category) {
         this.category = category;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

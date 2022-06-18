@@ -1,7 +1,6 @@
 package com.example.reverse_am.dto.productDTO;
 
 import com.example.reverse_am.dto.CategoryDTO;
-import com.example.reverse_am.dto.UserDTO;
 import com.example.reverse_am.entities.enums.Condition;
 
 import javax.validation.constraints.NotNull;
@@ -15,19 +14,15 @@ public class UserProductDTO {
     private String description;
     private Condition condition;
     @NotNull
-    private UserDTO user;
-    @NotNull
     private CategoryDTO category;
 
     public UserProductDTO() {
     }
 
-    public UserProductDTO(String name, String description, Condition condition,
-                          UserDTO user, CategoryDTO category) {
+    public UserProductDTO(String name, String description, Condition condition, CategoryDTO category) {
         this.name = name;
         this.description = description;
         this.condition = condition;
-        this.user = user;
         this.category = category;
     }
 
@@ -53,14 +48,6 @@ public class UserProductDTO {
 
     public void setCondition(Condition condition) {
         this.condition = condition;
-    }
-
-    public UserDTO getUser() {
-        return user;
-    }
-
-    public void setUser(UserDTO user) {
-        this.user = user;
     }
 
     public CategoryDTO getCategory() {

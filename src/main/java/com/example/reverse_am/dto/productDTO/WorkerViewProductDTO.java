@@ -4,6 +4,7 @@ import com.example.reverse_am.dto.CategoryDTO;
 
 public class WorkerViewProductDTO {
 
+    private Long id;
     private String name;
     private String description;
     private CategoryDTO category;
@@ -11,7 +12,8 @@ public class WorkerViewProductDTO {
     public WorkerViewProductDTO() {
     }
 
-    public WorkerViewProductDTO(String name, String description, CategoryDTO category) {
+    public WorkerViewProductDTO(Long id, String name, String description, CategoryDTO category) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.category = category;
@@ -39,6 +41,14 @@ public class WorkerViewProductDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

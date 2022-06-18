@@ -25,29 +25,23 @@ public class ProductService {
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
-    private final CategoryMapper categoryMapper;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, ProductMapper productMapper,CategoryMapper categoryMapper,
+    public ProductService(ProductRepository productRepository, ProductMapper productMapper,
                           CategoryRepository categoryRepository, UserRepository userRepository) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
-        this.categoryMapper = categoryMapper;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
     }
 
-    public UserProductDTO createProduct(UserProductDTO productDTO) {
-        Optional<User> user = this.userRepository.findUserByEmail(productDTO.getUser().getEmail());
-        if (user.isEmpty()) {
-            throw new ResourceNotFoundException("The user is not found ");
-        }
+    public UserProductDTO createProduct(User user, UserProductDTO productDTO) {
         Optional<Category> category = this.categoryRepository.findByCategory(productDTO.getCategory().getCategory());
         if (category.isEmpty()) {
             throw new ResourceNotFoundException("The category is not found ");
         }
         Product product = this.productMapper.toProduct(productDTO);
-        product.setUser(user.get());
+        product.setUser(user);
         product.setCategory(category.get());
         return this.productMapper.toUserProductDTO(this.productRepository.save(product));
     }
@@ -68,10 +62,6 @@ public class ProductService {
     }
 
     public UserProductDTO updateProductUser(Long id, UserProductDTO productDTO) {
-        Optional<User> user = this.userRepository.findUserByEmail(productDTO.getUser().getEmail());
-        if (user.isEmpty()) {
-            throw new ResourceNotFoundException("The user is not found ");
-        }
         Optional<Category> category = this.categoryRepository.findByCategory(productDTO.getCategory().getCategory());
         if (category.isEmpty()) {
             throw new ResourceNotFoundException("The category is not found ");
@@ -86,7 +76,6 @@ public class ProductService {
         }
         product.setName(productDTO.getName());
         product.setCategory(category.get());
-        product.setUser(user.get());
         product.setDescription(productDTO.getDescription() == null ? "Not defined" : productDTO.getDescription());
         product.setCondition(productDTO.getCondition());
         return this.productMapper.toUserProductDTO(this.productRepository.save(product));

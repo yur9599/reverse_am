@@ -10,32 +10,32 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/bags")
 public class BagController {
 
     @Autowired
     private BagService bagService;
 
-    @GetMapping("/bags/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getBagById(@PathVariable("id") Long id){
         return ResponseEntity.ok().body(this.bagService.getBagById(id));
     }
 
-    @PostMapping("/bags")
+    @PostMapping
     public ResponseEntity<?> createBag(@Valid @RequestBody BagDTO bagDTO){
         Assert.notNull(bagDTO,"Bag is null ");
         Assert.notNull(bagDTO.getUser(),"User is null ");
         return ResponseEntity.ok().body(this.bagService.createBag(bagDTO));
     }
 
-    @PutMapping("/bags/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateBag(@PathVariable("id")Long id , @Valid @RequestBody BagDTO bagDTO){
         Assert.notNull(bagDTO,"Bag is null ");
         Assert.notNull(bagDTO.getUser(),"User is null ");
         return ResponseEntity.ok().body(this.bagService.updateBag(id,bagDTO));
     }
 
-    @DeleteMapping("/bags/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBag(@PathVariable("id")Long id){
         this.bagService.deleteBag(id);
         return ResponseEntity.ok().body("Bag is deleted ");
