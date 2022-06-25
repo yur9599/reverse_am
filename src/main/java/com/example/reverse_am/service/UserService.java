@@ -2,10 +2,7 @@ package com.example.reverse_am.service;
 
 import com.example.reverse_am.dto.BagDTO;
 import com.example.reverse_am.dto.UserDTO;
-import com.example.reverse_am.entities.Address;
-import com.example.reverse_am.entities.Bag;
-import com.example.reverse_am.entities.Product;
-import com.example.reverse_am.entities.User;
+import com.example.reverse_am.entities.*;
 import com.example.reverse_am.exceptions.DuplicateResourceException;
 import com.example.reverse_am.exceptions.InsufficientFundsException;
 import com.example.reverse_am.exceptions.NoAccessException;
@@ -18,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -145,6 +143,18 @@ public class UserService {
             throw new ResourceNotFoundException("The user is not found ");
         }
         return this.userMapper.toUserDTO(user.get());
+    }
+
+    public List<UserDTO> findUserByRole(String role){
+        Optional<Role> roleDB = this.roleRepository.findRoleByRole(role);
+        if (roleDB.isEmpty()){
+            throw new ResourceNotFoundException("No such role ");
+        }
+        Optional<List<User>> users = this.userRepository.findUserByRole(roleDB.get());
+        if (users.isEmpty()){
+            throw new ResourceNotFoundException("Users not found ");
+        }
+        return this.userMapper.mapAllUsers(users.get());
     }
 
 }

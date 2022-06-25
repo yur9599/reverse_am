@@ -5,11 +5,6 @@ import com.example.reverse_am.configuration.LoggedInUser;
 import com.example.reverse_am.dto.productDTO.*;
 import com.example.reverse_am.entities.enums.Condition;
 import com.example.reverse_am.service.ProductService;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,7 +15,6 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/products")
-//@SecurityRequirement(name = "bearerAuth")
 public class ProductController {
 
     @Autowired

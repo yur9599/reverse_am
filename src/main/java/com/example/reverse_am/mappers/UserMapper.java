@@ -6,6 +6,9 @@ import com.example.reverse_am.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class UserMapper {
 
@@ -20,6 +23,10 @@ public class UserMapper {
     public UserDTO toUserDTO(User user){
         return new UserDTO(user.getName(), user.getSureName(), user.getPhoneNumber(), user.getEmail(),
                 user.getPassword(),addressMapper.toAddressDTO(user.getAddress()),user.getRevCoin());
+    }
+
+    public List<UserDTO> mapAllUsers(List<User> users){
+        return users.stream().map(this::toUserDTO).collect(Collectors.toList());
     }
 
 }

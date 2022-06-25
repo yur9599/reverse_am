@@ -24,6 +24,11 @@ public class UserController {
         return ResponseEntity.ok().body(this.userService.getUserById(id));
     }
 
+    @GetMapping("/find/{role}")
+    public ResponseEntity<?> getUserById(@PathVariable("role") String role){
+        return ResponseEntity.ok().body(this.userService.findUserByRole(role));
+    }
+
     @PostMapping
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO){
         Assert.notNull(userDTO,"User is null ");

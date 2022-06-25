@@ -11,6 +11,9 @@ public class AppUser implements UserDetails {
 
     private User user;
 
+    public AppUser() {
+    }
+
     public AppUser(User user) {
         this.user = user;
     }
